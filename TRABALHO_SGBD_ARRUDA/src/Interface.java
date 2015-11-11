@@ -1,0 +1,94 @@
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Scanner;
+
+public class Interface {
+	//Variáveis globais
+	static Funcoes funcoes = new   Funcoes();
+	HashMap<Integer, String> indices;
+	//Id autoincremento
+	static int iID = 0;
+	
+	public static void main(String[] args) throws IOException {
+		//Criação do arquivo 
+		funcoes.CriarArquivo();
+		//Montagem dos indices do datablock 
+		funcoes.GravarIndice("3,4,5,6,7,8,9,10","1,2","3","1","3");
+		//Recupera os indices
+		HashMap<Integer, String> indices = funcoes.RecuperaIndice();
+		//Montagem do menu		
+		MontagemMenu();
+	}
+
+	//Método que monta a interface do sistema.
+		public static void MontagemMenu() throws IOException{
+			
+			String valor ="1"; 
+			while(Integer.parseInt(valor.trim()) > 0 && Integer.parseInt(valor.trim()) < 5){
+				
+				Scanner sc = new Scanner(System.in);    
+				System.out.println("Bem Vindo ao Metadado SGBD");
+				System.out.println("Escolha uma das opções abaixo:");
+				System.out.println("1 - Inserir Registro.");
+				System.out.println("2 - Excluir Registro.");
+				System.out.println("3 - Atualizar Registro.");
+				System.out.println("4 - Buscar Resgistro.");
+				System.out.println("5 - Sair do sistema.\n");
+				valor = sc.nextLine();
+				
+				switch (Integer.parseInt(valor.trim())) {
+				case 1:
+					System.out.println("Inserir o texto:");
+					String sDadosDigitados=sc.nextLine();
+					iID++;
+					//Recupera o rowId q ainda não está cheio
+					int rowId = funcoes.RetornaIndicePrimeiroDataBlockVazio();
+					//Grava o texto no DataBlock
+					if(funcoes.GravaDataBlock(iID, sDadosDigitados, String.valueOf(rowId))){
+						System.out.println("Dados registrados com sucesso!");
+					}else{
+						System.out.println("Erro ao salvar dadso");
+					}					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					String opBusca= "";
+					System.out.println("Escolha a opção de busca: [1] - ID, [2] - Texto, [3] - Retornar ao Menu \n");
+					opBusca = sc.nextLine();
+					//Recupera os indices dos datablocks que estão ocupados 
+					int listaDataBlockUsados[] = funcoes.RecuperaDataBlocksUsados();
+					if(opBusca.equals("1")){
+						System.out.println("Digite o ID:\n");
+						opBusca = sc.nextLine();
+						funcoes.MontaSaida(funcoes.BuscaDataBlock(Integer.parseInt(opBusca), "", listaDataBlockUsados));
+						break;
+					}else if(opBusca.equals("2")){
+						System.out.println("Digite a palavra que procura:\n");
+						opBusca = sc.nextLine();
+						funcoes.MontaSaida(funcoes.BuscaDataBlock(0,opBusca.trim(), listaDataBlockUsados));		
+						
+					}else if(opBusca.equals("3")){
+						break;
+					}else{
+						System.out.println("Você errou a opção,\n sistema irá retornar ao menu.");
+					}
+					
+					
+					break;
+				case 5:
+					
+					break;
+				}
+				
+							
+			}	
+		}
+	
+	
+	
+}
