@@ -149,7 +149,7 @@ private Nodo<T> raiz;
 					nodo.esquerdo.limpaFilhos();
 					nodo.esquerdo.addEsquerda(esquerda); 
 					
-					System.out.println("imprimir o pai e seus nodos 00: " + nodo.esquerdo.pai);
+					System.out.println("imprimir o pai e seus nodos 00: " + nodo.pai.chave);
 					nodo.esquerdo.pai.imprimeChaves();
 				    		  		    
 					
@@ -164,7 +164,7 @@ private Nodo<T> raiz;
 						novo.direito = novoDireita;
 						novo.esquerdo = nodo;
 					//	return nodo.pai = novo;//inserir0(novo, meio);
-						return nodo.esquerdo.pai = inserir0(novo, meio);
+						return nodo.pai = inserir0(novo, meio);
 					}
 					
 					else
