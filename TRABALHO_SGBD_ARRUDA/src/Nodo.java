@@ -1,5 +1,6 @@
 import java.awt.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Nodo<T extends Comparable<T>>  {
 	
@@ -25,7 +26,9 @@ public class Nodo<T extends Comparable<T>>  {
 	{
 			rowIds.add(chave);
 			//ordena	
-			for (int i = 0; i < rowIds.size(); i++) 
+	        Collections.sort(rowIds);   
+	        
+	       			/*for (int i = 0; i <= rowIds.size(); i++) 
 				{
 					for (int j = 0; j < rowIds.size() - 1; j++) 
 					{
@@ -35,7 +38,7 @@ public class Nodo<T extends Comparable<T>>  {
 							
 						}
 					}
-				}
+				}*/
 	}
 	
 	public void addOrdenadoArray(Nodo<T> chave)
@@ -82,19 +85,25 @@ public class Nodo<T extends Comparable<T>>  {
 			return true;
 	}
 
-		public ArrayList<T> splitEsquerda() {
+	public ArrayList<T> splitEsquerda() 
+	{
 		ArrayList<T> resposta = new ArrayList<T>();
-		resposta.add(0, rowIds.get(0));
-		resposta.add(1, rowIds.get(1));
+	
+			for(int i = 0; i<rowIds.size(); i++)
+			{
+				resposta.add(rowIds.get(i));
+			}
 		
 		return resposta;
 	}
 	
 	public ArrayList<T> splitDireita() {
 		ArrayList<T> resposta = new ArrayList<T>();
-		resposta.add(0, rowIds.get(2));
-		resposta.add(1, rowIds.get(3));
-		resposta.add(2, rowIds.get(4));
+		
+		
+		resposta.add(0, rowIds.get(3));
+		resposta.add(1, rowIds.get(4));
+			
 		
 		return resposta;
 	}
@@ -106,6 +115,11 @@ public class Nodo<T extends Comparable<T>>  {
 				rowIds.add(i, esquerda.get(i));
 
 			}
+	}
+	
+	public void limpaFilhos() 
+	{
+				rowIds.clear();	
 	}
 	
 	public void addDireita(ArrayList<T> direita) 

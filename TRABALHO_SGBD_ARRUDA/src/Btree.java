@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 public class Btree<T extends Comparable<T>> {
 	
-private Nodo raiz;
+private Nodo<T> raiz;
 	
 	public void inserir(T chave)
 	{
@@ -11,17 +11,17 @@ private Nodo raiz;
 		
 	}
 	
-	private Nodo inserir0(Nodo nodo, T chave)
+	private Nodo<T> inserir0(Nodo<T> nodo, T chave)
 	{
 		if(nodo == null)
 		{
-			return new Nodo(chave);
+			return new Nodo<T>(chave);
 		}
 		
 		if(nodo.esquerdo == null && nodo.direito == null)
 		{
 			
-			System.out.println("raiz " + nodo.chave);
+			System.out.println("raiz sem esquerdo e nem direito " + nodo.chave);
 
 			//olha pro nodo e ve se tem espaco
 			// tem espaco, entao coloca o rowid la dentro
@@ -34,13 +34,12 @@ private Nodo raiz;
 			}
 			else if(nodo.temEspaco() == false)
 			{
-				System.out.println("inseri pelo sem espaco " + chave);
+				System.out.println("***inseri pelo sem espaco " + chave);
 
 				//nao tem espaço? tem que fazer o spli das folhas  e reerenciar
 				//add pra estouraR
 				nodo.addOrdenadoArray(chave);
 				nodo.imprimeChaves();
-
 				
 				//chama split da esquerda
 				ArrayList<T> esquerda = nodo.splitEsquerda();
@@ -48,40 +47,35 @@ private Nodo raiz;
 				ArrayList<T> direita = nodo.splitDireita();
 				//pega o meio do array
 			    T meio = (T) nodo.getEstouro();
-			    System.out.println("mei" + meio);
+			    
+			    System.out.println("meio" + meio);
+			    
 			    for(int i = 0; i<direita.size(); i++)
 			    {
-			    	System.out.println("dd"+direita.get(i));
+			    	System.out.println("ESQUERDAS"+direita.get(i));
 			    }
 			    
 			    //cria o novo nodo direito
-				Nodo novoDireita = new Nodo(meio);
-				//novoDireita.addDireita(direita);
+				Nodo<T> novoDireita = new Nodo<T>(meio);
+				novoDireita.addDireita(direita);
 				
 				 //cria o novo nodo esquerdo
+				nodo.limpaFilhos();
 				nodo.addEsquerda(esquerda); 
-			    		  		    
+			    		
+				System.out.println("imprimir o pai e seus nodos: " + nodo.pai);
 				
 			    //tem que fazer o nodo que estourou subir
 				// c n tem pai ele eh o raiz, logo tem que criar um pai pra ele
 				if(nodo.pai == null)
 				{
-					Nodo novo = new Nodo(meio);
+					Nodo<T> novo = new Nodo<>(meio);
 					raiz = novo;
 					novo.isRamo = true;
 					novo.imprimeChaves();
 					novo.direito = novoDireita;
 					novo.esquerdo = nodo;
-					return nodo.pai = novo;// inserir0(novo, meio);
-					//novo.direito = novoDireita;
-
-					
-					//nodo.pai.esquerdo = nodo;
-					//nodo.pai.direito = novoDireita;
-					//raiz = nodo.pai;
-					
-					
-		
+					return nodo.pai = inserir0(novo, meio);
 				}
 				
 				else
@@ -98,67 +92,87 @@ private Nodo raiz;
 		}
 		else if(chave.compareTo((T) nodo.chave) < 0)
 		{
-			System.out.print("entrei no maior");
+			System.out.print("entrei no menor com o " + chave);
 			
 			//olha pro nodo e ve se tem espaco
 			// tem espaco, entao coloca o rowid la dentro
-			if(nodo.temEspaco())
+			System.out.println("entrei no maior com o " + nodo.chave + "e com a chave " + chave);
+			//olha pro nodo e ve se tem espaco
+			// tem espaco, entao coloca o rowid la dentro
+			if(nodo.isRamo == false)
 			{
-				nodo.esquerdo.addOrdenadoArray(chave);
+				System.out.println("é ramo, logo nao posso adicionar aqui, poha e tenho que ir pra baixo.");
 				return nodo;
 			}
-			else if(nodo.temEspaco() ==  false)
+			else
 			{
-				//nao tem espaço? tem que fazer o spli das folhas  e reerenciar
-				//add pra estouraR
-				nodo.addOrdenadoArray(chave);
-				
-				//chama split da esquerda
-				ArrayList<T> esquerda = nodo.splitEsquerda();
-				//chama split da direita
-				ArrayList<T> direita = nodo.splitDireita();
-				//pega o meio do array
-			    T meio = (T) nodo.getEstouro();
-			    
-			    //cria o novo nodo esquerdo
-				Nodo novoDireita = new Nodo(meio);
-				novoDireita.addDireita(direita);
-	
-			    //cria o novo nodo direito
-				nodo.addEsquerda(esquerda); 		    
-				
-			    //tem que fazer o nodo que estourou subir
-				// c n tem pai ele eh o raiz, logo tem que criar um pai pra ele
-				if(nodo.pai == null)
+				//cheghuei no folha que posso adicionar, agora tento colocar o rowid aqui dentro
+				if(nodo.esquerdo.temEspaco() == true)
 				{
-					Nodo novo = new Nodo(meio);
-					raiz = novo;
-					novo.isRamo = true;
-					novo.imprimeChaves();
-					novo.direito = novoDireita;
-					novo.esquerdo = nodo;
-					return nodo.pai = novo;// inserir0(novo, meio);
-					
-					/*Nodo novo = new Nodo(meio);
-					novo.esquerdo = nodo;
-					novo.direito = novoDireita;
-					return nodo.pai = inserir0(novo, meio);
-					*/
+		
+				nodo.esquerdo.addOrdenadoArray(chave);
+				return nodo;
 				}
-				
-				else
+				else if(nodo.esquerdo.temEspaco() == false)
 				{
-					// primeiro tenho que saber se o pai tem espaco
+					System.out.println("***estou no nodo esquerdo, que eh o " + nodo.esquerdo.chave);
+					nodo.esquerdo.imprimeChaves();
+
+
+					System.out.println("***inseri pelo sem espaco la no chave maior " + chave);
+
+					//nao tem espaço? tem que fazer o spli das folhas  e reerenciar
+					//add pra estouraR
+					nodo.esquerdo.addOrdenadoArray(chave);
+					nodo.esquerdo.imprimeChaves();
+
+					System.out.println("*aaaa*");
+					//chama split da esquerda
+					ArrayList<T> esquerda = nodo.esquerdo.splitEsquerda();
+					//chama split da direita
+					ArrayList<T> direita = nodo.esquerdo.splitDireita();
+					//pega o meio do array
+				    T meio = (T) nodo.esquerdo.getEstouro();
+				    
+				    System.out.println("meio" + meio);
+				    
+				    for(int i = 0; i<direita.size(); i++)
+				    {
+				    	System.out.println("dd"+direita.get(i));
+				    }
+				    
+				    //cria o novo nodo direito
+					Nodo novoDireita = new Nodo(meio);
+					novoDireita.addDireita(direita);
 					
-					if(nodo.pai.temEspaco())
+					 //cria o novo nodo esquerdo
+					nodo.esquerdo.limpaFilhos();
+					nodo.esquerdo.addEsquerda(esquerda); 
+					
+					System.out.println("imprimir o pai e seus nodos 00: " + nodo.esquerdo.pai);
+					nodo.esquerdo.pai.imprimeChaves();
+				    		  		    
+					
+				    //tem que fazer o nodo que estourou subir
+					// c n tem pai ele eh o raiz, logo tem que criar um pai pra ele
+					if(nodo.esquerdo.pai == null)
 					{
-						System.out.println("aqui");
-						nodo.pai.addOrdenadoArray(novoDireita);
+						Nodo novo = new Nodo(meio);
+						//raiz = novo;
+						novo.isRamo = true;
+						novo.imprimeChaves();
+						novo.direito = novoDireita;
+						novo.esquerdo = nodo;
+					//	return nodo.pai = novo;//inserir0(novo, meio);
+						return nodo.pai = inserir0(novo, meio);
 					}
 					
-					else if(nodo.pai.temEspaco() ==  false)
+					else
 					{
-						//dai tem que fazer o spllit do no ramo
+						//APENAS ADD NO PAI O NOVO NODO PRA ELE REFERENCIAR OS DEMAIS e faz o split do filho 
+						Nodo novo = new Nodo(meio);
+						novo.esquerdo = novo;
+						nodo.esquerdo.pai.addOrdenadoArray(inserir0(novo, meio));
 					}
 					
 				}
@@ -169,65 +183,89 @@ private Nodo raiz;
 		}
 		else if (chave.compareTo((T) nodo.chave) > 0)
 		{
+			
+			System.out.println("entrei no maior com o " + nodo.chave + "e com a chave " + chave);
 			//olha pro nodo e ve se tem espaco
 			// tem espaco, entao coloca o rowid la dentro
-			if(nodo.temEspaco())
+			if(nodo.isRamo == false)
 			{
-				nodo.direito.addOrdenadoArray(chave);
+				System.out.println("é ramo, logo nao posso adicionar aqui, poha e tenho que ir pra baixo.");
 				return nodo;
 			}
-			else if(nodo.temEspaco() ==  false)
+			else
 			{
-				//nao tem espaço? tem que fazer o spli das folhas  e reerenciar
-				//add pra estouraR
-				nodo.addOrdenadoArray(chave);
-				
-				//chama split da esquerda
-				ArrayList<T> esquerda = nodo.splitEsquerda();
-				//chama split da direita
-				ArrayList<T> direita = nodo.splitDireita();
-				//pega o meio do array
-			    T meio = (T) nodo.getEstouro();
-			    
-			    //cria o novo nodo esquerdo
-				Nodo novoDireita = new Nodo(meio);
-				novoDireita.addDireita(direita);
-	
-			    //cria o novo nodo direito
-				nodo.addEsquerda(esquerda); 		    
-				
-			    //tem que fazer o nodo que estourou subir
-				// c n tem pai ele eh o raiz, logo tem que criar um pai pra ele
-				if(nodo.pai == null)
+				//cheghuei no folha que posso adicionar, agora tento colocar o rowid aqui dentro
+				if(nodo.direito.temEspaco() == true)
 				{
-					Nodo novo = new Nodo(meio);
-					raiz = novo;
-					novo.isRamo = true;
-					novo.imprimeChaves();
-					novo.direito = novoDireita;
-					novo.esquerdo = nodo;
-					return nodo.pai = novo;// inserir0(novo, meio);
-					/*
-					Nodo novo = new Nodo(meio);
-					novo.esquerdo = nodo;
-					novo.direito = novoDireita;
-					return nodo.pai = inserir0(novo, meio);*/
+		
+				nodo.direito.addOrdenadoArray(chave);
+				return nodo;
+				}
+				else if(nodo.direito.temEspaco() == false)
+				{
+					System.out.println("***estou no nodo direito, que eh o " + nodo.direito.chave);
+					nodo.direito.imprimeChaves();
+
+
+					System.out.println("***inseri pelo sem espaco la no chave maior " + chave);
+
+					//nao tem espaço? tem que fazer o spli das folhas  e reerenciar
+					//add pra estouraR
+					nodo.direito.addOrdenadoArray(chave);
+					nodo.direito.imprimeChaves();
 					
+					
+
+					System.out.println("*aaaa*");
+					//chama split da esquerda
+					ArrayList<T> esquerda = nodo.direito.splitEsquerda();
+					//chama split da direita
+					ArrayList<T> direita = nodo.direito.splitDireita();
+					//pega o meio do array
+				    T meio = (T) nodo.direito.getEstouro();
+				    
+				    System.out.println("meio" + meio);
+				    
+				    for(int i = 0; i<direita.size(); i++)
+				    {
+				    	System.out.println("dd"+direita.get(i));
+				    }
+				    
+				    //cria o novo nodo direito
+					Nodo novoDireita = new Nodo(meio);
+					novoDireita.addDireita(direita);
+					
+					 //cria o novo nodo esquerdo
+					nodo.direito.limpaFilhos();
+					nodo.direito.addEsquerda(esquerda); 
+					
+					System.out.println("imprimir o pai e seus nodos: " + nodo.direito.pai);
+					//nodo.direito.pai.imprimeChaves();
+				    		  		    
+					
+				    //tem que fazer o nodo que estourou subir
+					// c n tem pai ele eh o raiz, logo tem que criar um pai pra ele
+					if(nodo.direito.pai == null)
+					{
+						Nodo novo = new Nodo(meio);
+						//raiz = novo;
+						novo.isRamo = true;
+						novo.imprimeChaves();
+						novo.direito = novoDireita;
+						novo.esquerdo = nodo;
+						return nodo.pai = inserir0(novo, meio);
+					}
+					
+					else
+					{
+						//APENAS ADD NO PAI O NOVO NODO PRA ELE REFERENCIAR OS DEMAIS e faz o split do filho 
+						Nodo novo = new Nodo(meio);
+						novo.esquerdo = novo;
+						nodo.direito.pai.addOrdenadoArray(inserir0(novo, meio));
+					}
 				}
-				
-				else
-				{
-					//APENAS ADD NO PAI O NOVO NODO PRA ELE REFERENCIAR OS DEMAIS e faz o split do filho 
-	
-					Nodo novo = new Nodo(meio);
-					novo.esquerdo = novo;
-					nodo.pai.addOrdenadoArray(inserir0(novo, meio));
-				}
-				
 			}
 		}
-		else
-		throw new IllegalArgumentException("Chave já existe");
 
 	return nodo;
 	}
@@ -262,7 +300,12 @@ private Nodo raiz;
 		{
 			bt.inserir(i);
 		}
-		System.out.println(bt.raiz.chave);
+		System.out.println("raix final " + bt.raiz.chave);
+		System.out.println("esq raiz final " + bt.raiz.esquerdo.chave);
+		System.out.println("chaves: ");bt.raiz.esquerdo.imprimeChaves();
+		System.out.println("dir raiz final " + bt.raiz.direito.chave);
+		System.out.println("chaves: ");bt.raiz.direito.imprimeChaves();
+		System.out.println("chaves da raiz " + bt.raiz.chave);
 		System.out.println(bt.toString());
 		
 		
