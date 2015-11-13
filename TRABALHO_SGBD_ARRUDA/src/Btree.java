@@ -164,7 +164,7 @@ private Nodo<T> raiz;
 						novo.direito = novoDireita;
 						novo.esquerdo = nodo;
 					//	return nodo.pai = novo;//inserir0(novo, meio);
-						return nodo.pai = inserir0(novo, meio);
+						return nodo.esquerdo.pai = inserir0(novo, meio);
 					}
 					
 					else
@@ -253,7 +253,7 @@ private Nodo<T> raiz;
 						novo.imprimeChaves();
 						novo.direito = novoDireita;
 						novo.esquerdo = nodo;
-						return nodo.pai = inserir0(novo, meio);
+						return nodo.direito.pai = inserir0(novo, meio);
 					}
 					
 					else
