@@ -15,6 +15,174 @@ private Nodo<T> raiz;
 	{
 		if(nodo == null)
 		{
+			// se o nodo atual é null significa que nao ha nada, logo ele cria um nodo que sera a raiz
+			return new Nodo<T>(chave);
+		}
+		
+		//verifica se ele ele eh ramo ou folha
+		//se for folha apenas escorrega ate a folha e add
+		if(nodo.isRamo == false)
+		{
+			if(nodo.chave.compareTo(chave) < 0) //se for maior significa que tem que ir pra direita
+			{
+				if(nodo.temEspaco())
+				{
+					System.out.println("tem espaco na folha pelo maior e vou add na folha " + nodo.chave + "o valor " + chave);
+					nodo.addOrdenadoArray(chave);
+				}
+				else
+				{
+					//vou adicionar pra estourar
+					nodo.addOrdenadoArray(chave);
+					
+					//aqui faz o split de follha
+					System.out.println("NAO tem espaco e tem que fazer split de FOLHA " + nodo.chave + "o valor " + chave);
+					nodo.imprimeChaves();
+					ArrayList<T> conteudoEsquerda = nodo.splitEsquerda();
+					
+					//chama split da direita
+					ArrayList<T> conteudoDireita = nodo.splitDireita();
+					
+					//pega o meio do array
+					T meio = (T) nodo.getEstouro();
+					
+					 //organiza o nodo da esquerda
+					nodo.limpaFilhos();
+					nodo.addEsquerda(conteudoEsquerda); 
+					
+					Nodo<T> novoDireita = new Nodo<T>(meio);
+					novoDireita.addDireita(conteudoDireita);
+					
+					if(nodo.pai == null)
+					{
+						// quando eu crio ele nao posso simplesmente tornar ele raiz, tenho que fazer a recursividade verificar se ele pode ser raiz
+						System.out.println("nao tem pai, logo vou add o " + meio+ "como raiz");
+						Nodo novoPai = new Nodo<T>(meio);
+						novoPai.esquerdo = nodo;
+						novoPai.direito = novoDireita;
+						novoPai.isRamo = true;
+						novoPai.addOrdenadoNodo(nodo); // ? precisa?
+						nodo.pai = inserir0(novoPai, chave);
+						raiz = nodo;
+					}
+					else if(nodo.pai.temEspacoRamo())
+					{
+						System.out.println("so add no pai");
+						
+						Nodo novoPai = new Nodo<T>(meio);
+						novoPai.esquerdo = nodo;
+						novoPai.direito = novoDireita;
+						novoPai.isRamo = true;
+						nodo.pai = inserir0(novoPai, chave);
+						
+						nodo.pai.addOrdenadoNodo(novoPai);
+
+						//aqui faz o split de follha
+
+					}
+					else if(!nodo.pai.temEspacoRamo())
+					{
+						System.out.println("NAO TEM ESPACO NO PAI");
+
+						//aqui faz o split de follha
+
+					}
+				}
+				
+			}
+			else if(nodo.chave.compareTo(chave) > 0) //se for menor significa que tem que ir pra direita
+			{
+				if(nodo.temEspaco())
+				{
+					System.out.println("tem espaco na folha pelo menor_ e vou add na folha " + nodo.chave + "o valor " + chave);
+					nodo.addOrdenadoArray(chave);	
+				}
+				else
+				{
+					
+					/*nodo.addOrdenadoArray(chave);
+
+					ArrayList<T> conteudoEsquerda = nodo.splitEsquerda();
+					
+					//chama split da direita
+					ArrayList<T> conteudoDireita = nodo.splitDireita();
+					
+					//pega o meio do array
+					T meio = (T) nodo.getEstouro();
+					
+					 //organiza o nodo da esquerda
+					nodo.limpaFilhos();
+					nodo.addEsquerda(conteudoEsquerda); 
+					
+					Nodo<T> novoDireita = new Nodo<T>(meio);
+					novoDireita.addDireita(conteudoDireita);
+					System.out.println("pai " + nodo.pai.chave);
+					
+					if(nodo.pai == null)
+					{
+						System.out.println("nao tem pai, logo vou add o " + meio);
+						Nodo novoPai = new Nodo<T>(meio);
+						novoPai.esquerdo = nodo;
+						novoPai.direito = novoDireita;
+						novoPai.isRamo = true;
+						//novoPai.addOrdenadoNodo(nodo);
+						
+						
+						nodo.pai = inserir0(novoPai, chave);
+					}
+					else if(nodo.pai.temEspacoRamo())
+					{
+						System.out.println("so add no pai");
+
+						//aqui faz o split de follha
+
+					}
+					else if(!nodo.pai.temEspacoRamo())
+					{
+						System.out.println("NAO TEM ESPACO NO PAI");
+						return nodo;
+
+						//aqui faz o split de follha
+
+					}*/
+				}
+				
+			}
+			
+			
+		}
+		
+		//se for ramos tem que adicionar ele no ramo dele
+
+		else if(nodo.isRamo)
+		{
+			if(nodo.temEspaco())
+			{
+				System.out.println("sou ramo, mas sou raiz? meu nodo é " + nodo.chave + " minha chave " + chave + " meu esquerdo eh o " + nodo.esquerdo.chave + " e o meu direito eh o " + nodo.direito.chave);
+				nodo.addOrdenadoNodo(nodo);
+				if(nodo.pai == null)
+				{
+					System.out.println("so raix pohaaa");
+					setRaiz(nodo);
+					System.out.println("ëssa e a raizzzz: " + raiz.chave);
+				}
+				nodo.imprimeChavesNodos();
+			}
+			else
+			{
+				//faz split de ramo
+				return nodo;
+			}
+			
+		}
+		
+		return nodo;
+	}
+	
+	/*private Nodo<T> inserir0(Nodo<T> nodo, T chave)
+	{
+		if(nodo == null)
+		{
 			System.out.println("btree vazia vou criar a raiz com o " + chave);
 			return new Nodo<T>(chave);
 		}
@@ -78,7 +246,7 @@ private Nodo<T> raiz;
 
 					System.out.println("raiz atual "+ raiz.chave);
 			    	System.out.println("dentro da raiz atual "+ raiz.imprimeReferencias());
-					return nodo.pai =  inserir0(novo, meio);
+					return nodo.pai = inserir0(novo, meio);
 				}
 				
 				else
@@ -216,7 +384,7 @@ private Nodo<T> raiz;
 				return nodo;
 			}
 			else
-			{*/
+			{
 				//cheghuei no folha que posso adicionar, agora tento colocar o rowid aqui dentro
 				if(nodo.direito.temEspaco() == true)
 				{
@@ -226,7 +394,7 @@ private Nodo<T> raiz;
 				}
 				else if(nodo.direito.temEspaco() == false)
 				{
-					System.out.println("***estou no nodo direito, que eh o " + nodo.direito.chave + " cujo pai � o " + nodo.direito.pai.chave);
+					System.out.println("***estou no nodo direito, que eh o " + nodo.direito.chave + " cujo pai � o " + nodo.direito.pai.chave);
 					nodo.direito.imprimeChaves();
 
 
@@ -363,7 +531,10 @@ private Nodo<T> raiz;
 		}
 
 	return nodo;
-	}
+	}*/
+	
+	
+	
 	
 	
 
@@ -386,23 +557,26 @@ private Nodo<T> raiz;
 	}
 	
 	
-	
+	public void setRaiz(Nodo<T> nodo)
+	{
+		raiz = nodo;
+	}
 	public static void main(String[] args) {
 	
-		Btree<Integer> bt = new Btree();
+		Btree<Integer> bt = new Btree<Integer>();
 
-		for(int i = 1; i< 14; i++)
+		for(int i = 1; i< 6; i++)
 		{
 			bt.inserir(i);
 		}
-		System.out.println("raix final " + bt.raiz.chave);
+		/*System.out.println("raiz final " + bt.raiz.chave);
 		System.out.println("chaves da raiz final:: ");
 		bt.raiz.imprimeChavesNodos();
 		System.out.println("esq raiz final " + bt.raiz.esquerdo.chave);
 		System.out.println("chaves: ");bt.raiz.esquerdo.imprimeChaves();
 		System.out.println("dir raiz final " + bt.raiz.direito.chave);
 		System.out.println("chaves: ");bt.raiz.direito.imprimeChaves();
-		System.out.println("chaves da raiz " + bt.raiz.chave);
+		System.out.println("chaves da raiz " + bt.raiz.chave);*/
 		System.out.println(bt.toString());
 		
 		

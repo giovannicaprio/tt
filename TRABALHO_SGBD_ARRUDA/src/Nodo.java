@@ -24,7 +24,7 @@ public class Nodo<T extends Comparable<T>>  {
 	
 	public int getPai(T chave2)
 	{
-		return (int) pai.chave;
+		return (Integer) pai.chave;
 	}
 	
 	public void addOrdenadoArray(T chave)
@@ -54,7 +54,7 @@ public class Nodo<T extends Comparable<T>>  {
 			//ordena	
 		for (int j = 0; j < referenciasNodos.size() - 1; j++) 
 		{
-			if ((int)referenciasNodos.get(j).chave > (int) referenciasNodos.get(j + 1).chave) 
+			if ((Integer)referenciasNodos.get(j).chave > (Integer) referenciasNodos.get(j + 1).chave) 
 			{
 				trocaRamo(referenciasNodos, j, j + 1);
 				
@@ -220,16 +220,13 @@ public class Nodo<T extends Comparable<T>>  {
 		
 		for(int i = 0; i<referenciasNodos.size(); i++)
 		{
-			int a = (int) referenciasNodos.get(i).chave;
+			int a = (Integer) referenciasNodos.get(i).chave;
 			Integer.toString(a);
 			resp += a + " "; 
 
 		}
 		
-		
-		
-		// TODO Auto-generated method stub
-		return null;
+		return resp;
 	}
 	
 	
