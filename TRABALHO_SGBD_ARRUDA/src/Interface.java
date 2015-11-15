@@ -51,6 +51,7 @@ public class Interface {
 
 			switch (Integer.parseInt(valor.trim())) {
 			case 1:
+<<<<<<< HEAD
 				System.out.println("Inserir o texto:");
 				String sDadosDigitados = sc.nextLine();
 				iID++;
@@ -75,6 +76,8 @@ public class Interface {
 				} else {
 					System.out.println("Erro ao salvar dados");
 =======
+=======
+>>>>>>> RenanCS/master
 				
 				 opBusca = "";
 				System.out.println("Escolha a opção de inserção: [1 - Num. JSON], [2 - Texto], [3 - Retornar ao Menu] \n");
@@ -138,6 +141,9 @@ public class Interface {
 				case "3":
 					
 					break;
+<<<<<<< HEAD
+>>>>>>> RenanCS/master
+=======
 >>>>>>> RenanCS/master
 				}
 
@@ -201,6 +207,7 @@ public class Interface {
 					System.out
 							.println("Você errou a opção,\n sistema irá retornar ao menu.");
 				}
+				
 
 				break;
 			case 5:
