@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /*
  * Classe buffer tem que funcionar da seguinte maneira:
@@ -11,67 +12,46 @@ import java.util.ArrayList;
 
 
 public class Buffer {
+	HashMap<Integer, String> listaDadoIndiceRowID; 
 	
-	public ArrayList<Integer> listaRowIds;
-	
+	//public ArrayList<Integer> listaDadoIndiceRowID;
 	public int key[];
 	boolean cacheHit = false;
 
 	
 	public Buffer(){
-		listaRowIds = new ArrayList<Integer>();
-		populaBuffer();
-		
-		
-		
+		listaDadoIndiceRowID = new HashMap<Integer, String>();			
 	}
 	
-	public void populaBuffer()
-	{
-		
-		
-		
-		Funcoes funcoes = new Funcoes();
-		int[] usados = funcoes.RecuperaDataBlocksUsados();
-		
-		for(int i= 0; i < 257; i++)
-		{
-		//	listaRowIds.add(usados[i], usados[i].toString());
+	public void adicionaIDSerialDados(int id, String sDados){
+		if (listaDadoIndiceRowID.size() < 257){
+			listaDadoIndiceRowID.put(id, sDados);
+		}else{
+			
+			//######## Remove o ultimo
+			listaDadoIndiceRowID.remove(listaDadoIndiceRowID.size() - 1);
+			listaDadoIndiceRowID.put(id, sDados);			
 		}
-		
-		
-		
 	}
 	
-	public boolean temNoBuffer(int rowId)
-	{
-		if(listaRowIds.get(rowId) == null)
-		{
-			return false; //cache miss
+	public String RecuperaDoBufferID(int id){
+		if(listaDadoIndiceRowID.containsKey(id)){
+		return listaDadoIndiceRowID.get(id);
+		}else{
+			return "";
 		}
-		
-		return true;
 	}
 	
-	public DataBlock clock(int rowId)
-	{
-		DataBlock resposta = new DataBlock();
-		
-		cacheHit = this.temNoBuffer(rowId);
-		
-		if(cacheHit)
-		{
-			//return listaRowIds.get(rowId);
+	public boolean  ExcluirDoBuffer(int id){
+		if(listaDadoIndiceRowID.containsKey(id)){
+			listaDadoIndiceRowID.remove(id);
+			return true;
+		}else{
+			return false;
 		}
-		
-		
-		
-		
-		
-		
-		
-		return resposta;
 	}
+	
+	
 	
 	
 	

@@ -1,12 +1,12 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class Interface {
 	// Variáveis globais
+	static Buffer oBuffer = new Buffer();
 	static Funcoes funcoes = new Funcoes();
 	HashMap<Integer, String> indices;
 	// Id autoincremento
@@ -21,7 +21,6 @@ public class Interface {
 		for (int i = 3; i < 65.633; i++) { //
 			indiceFree.append(i + (i < 65.632 ? "," : ""));
 		}
-
 		funcoes.GravarIndice(indiceFree.toString(), "1,2", "3", "1", "3");
 		// Recupera os indices
 		HashMap<Integer, String> indices = funcoes.RecuperaIndice();
@@ -31,11 +30,14 @@ public class Interface {
 
 	// Método que monta a interface do sistema.
 	public static void MontagemMenu() throws IOException {
-		GravarDadosJSONemBinario();
-
+		BTree tree = new BTree(2);// Btree GIOVANNI
+		ReferenciaDataBlock oRefDataBlock;
+		int listaDataBlockUsados[];
+		String opBusca = "";
 		String valor = "1";
-		while (Integer.parseInt(valor.trim()) > 0
-				&& Integer.parseInt(valor.trim()) < 5) {
+
+		
+		while (Integer.parseInt(valor.trim()) > 0 	&& Integer.parseInt(valor.trim()) < 5) {
 
 			Scanner sc = new Scanner(System.in);
 			System.out.println("Bem Vindo ao Metadado SGBD");
@@ -72,39 +74,126 @@ public class Interface {
 					System.out.println("Dados registrados com sucesso!");
 				} else {
 					System.out.println("Erro ao salvar dados");
+=======
+				
+				 opBusca = "";
+				System.out.println("Escolha a opção de inserção: [1 - Num. JSON], [2 - Texto], [3 - Retornar ao Menu] \n");
+				opBusca = sc.nextLine();
+				
+				switch (opBusca) {
+				case "1":
+					System.out.println("Inserir o numero do JSON:");
+					String sDadosDigitados = sc.nextLine();
+					String sDadosJson = funcoes.LeituraArquivoJson(Integer.parseInt(sDadosDigitados));
+					iID++;
+					// Recupera o rowId q ainda não está cheio
+					int rowId = funcoes.RetornaIndicePrimeiroDataBlockVazio();
+					// Criando um objeto de referência que irá retornar com os dados
+					// principais do datablock
+					 oRefDataBlock = new ReferenciaDataBlock();
+					// Grava o texto no DataBlock
+					if (funcoes.GravaDataBlock(iID, sDadosJson, String.valueOf(rowId),oRefDataBlock)) {
+						
+						//Grava dados no buffer
+						oBuffer.adicionaIDSerialDados(iID,sDadosJson);
+						//############# GRAVAR O OBJ REFDATABLOCK NA ARVORE 
+							//REVER ESTA PARTE tree.insert(t, oRefDataBlock.id);
+						//################################################
+						
+						System.out.println("Dados registrados com sucesso!");
+					} else {
+						System.out.println("Erro ao salvar dados");
+					}
+					
+					break;
+					
+				case "2":
+					// Recupera os indices dos datablocks que estão ocupados
+					listaDataBlockUsados= funcoes.RecuperaDataBlocksUsados();
+					System.out.println("Inserir o texto:");
+					String sDadosDigitados1 = sc.nextLine();
+					iID++;
+					
+					// Recupera o rowId q ainda não está cheio
+					int rowId1 = funcoes.RetornaIndicePrimeiroDataBlockVazio();
+					
+					// Criando um objeto de referência que irá retornar com os dados principais do datablock
+					 oRefDataBlock = new ReferenciaDataBlock();
+					
+					 // Grava o texto no DataBlock
+					if (funcoes.GravaDataBlock(iID, sDadosDigitados1,String.valueOf(rowId1), oRefDataBlock)) {
+						
+						//Grava dados no buffer
+						oBuffer.adicionaIDSerialDados(iID,sDadosDigitados1);
+						
+						//############# GRAVAR O OBJ REFDATABLOCK NA ARVORE 
+								//REVER ESTA PARTE tree.insert(t, oRefDataBlock.id);
+						//################################################
+						
+						System.out.println("Dados registrados com sucesso!");
+					} else {
+						System.out.println("Erro ao salvar dados");
+					}	
+					break;
+				case "3":
+					
+					break;
+>>>>>>> RenanCS/master
 				}
+
+				
 				break;
 			case 2:
 				String opBuscaDelete = "";
 				System.out.println("Digite o id que deseja excluir:\n");
 				opBuscaDelete = sc.nextLine();
-				if (funcoes.BuscaRowID(Integer.parseInt(opBuscaDelete.trim()))) {
-					System.out.println("Registro excluído do sucesso!");
-				} else {
-					System.out.println("Registro não encontrado!");
+				
+				//Grava dados no buffer
+				if ( oBuffer.ExcluirDoBuffer(Integer.parseInt(opBuscaDelete.toString().trim()))){
+				
+					//############# REMOVER OBJ REFDATABLOCK DA ARVORE 
+						//REVER ESTA PARTE tree.REMOVEt(t, oRefDataBlock.id);
+					//################################################
+			
+					if (funcoes.BuscaRowID(Integer.parseInt(opBuscaDelete.trim()))) {
+						System.out.println("Registro excluído do sucesso!");
+					} else {
+						System.out.println("Registro não encontrado!");
+					}
+				}else{
+					System.out.println("Registro não encontrado!");	
 				}
+				
+				
 				break;
 			case 3:
 
 				break;
 			case 4:
-				String opBusca = "";
-				System.out
-						.println("Escolha a opção de busca: [1 - ID], [2 - Texto], [3 - Retornar ao Menu] \n");
+				 opBusca = "";
+				System.out.println("Escolha a opção de busca: [1 - ID], [2 - Texto], [3 - Retornar ao Menu] \n");
 				opBusca = sc.nextLine();
 				// Recupera os indices dos datablocks que estão ocupados
-				int listaDataBlockUsados[] = funcoes.RecuperaDataBlocksUsados();
+				 listaDataBlockUsados = funcoes.RecuperaDataBlocksUsados();
 				if (opBusca.equals("1")) {
 					System.out.println("Digite o ID:\n");
 					opBusca = sc.nextLine();
-					funcoes.MontaSaida(funcoes.BuscaDataBlock(
-							Integer.parseInt(opBusca), "", listaDataBlockUsados));
+					
+					//##############BUSCA DO BUFFER SOMENTE SE FOR POR ID
+					String sDadosDoBuffer = oBuffer.RecuperaDoBufferID(Integer.parseInt(opBusca.toString().trim()));
+					//####################################################
+					
+					if(sDadosDoBuffer.toString().trim()  == ""){
+						funcoes.MontaSaida(funcoes.BuscaDataBlock(Integer.parseInt(opBusca), "", listaDataBlockUsados));
+					}else{
+						 System.out.println("ID=" + iID + " Value =" + sDadosDoBuffer + "\n");
+					}
+					
 					break;
 				} else if (opBusca.equals("2")) {
 					System.out.println("Digite a palavra que procura:\n");
 					opBusca = sc.nextLine();
-					funcoes.MontaSaida(funcoes.BuscaDataBlock(0,
-							opBusca.trim(), listaDataBlockUsados));
+					funcoes.MontaSaida(funcoes.BuscaDataBlock(0,opBusca.trim(), listaDataBlockUsados));
 
 				} else if (opBusca.equals("3")) {
 					break;

@@ -731,6 +731,5 @@ public class Funcoes {
 	}
 	
 	
-	
 
 }
