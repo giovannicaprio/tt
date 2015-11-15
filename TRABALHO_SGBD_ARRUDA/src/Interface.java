@@ -47,7 +47,7 @@ public class Interface {
 					if(funcoes.GravaDataBlock(iID, sDadosDigitados, String.valueOf(rowId))){
 						System.out.println("Dados registrados com sucesso!");
 					}else{
-						System.out.println("Erro ao salvar dadso");
+						System.out.println("Erro ao salvar dados");
 					}					
 					break;
 				case 2:

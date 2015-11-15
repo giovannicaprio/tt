@@ -1,5 +1,6 @@
 import java.awt.List;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 public class Nodo<T extends Comparable<T>>  {
@@ -67,7 +68,7 @@ public class Nodo<T extends Comparable<T>>  {
 	
 	private void trocaRamo(ArrayList<Nodo> lista, int j, int i) {
 		T tmp = (T) lista.get(i);
-		lista.add(i, (Nodo) lista.get(j));
+		lista.add(i, lista.get(j));
 		lista.add(j, (Nodo) tmp);		
 	}
 
@@ -79,7 +80,7 @@ public class Nodo<T extends Comparable<T>>  {
 
 	public T getEstouro()
 	{
-		return (T) rowIds.get(2);
+		return rowIds.get(2);
 	}
 	
 	public T getEstouroRamo()
@@ -89,7 +90,7 @@ public class Nodo<T extends Comparable<T>>  {
 	
 	public T getPrimeiroDireita()
 	{
-		return (T) rowIds.get(3);
+		return rowIds.get(3);
 	}
 
 	
@@ -115,9 +116,21 @@ public class Nodo<T extends Comparable<T>>  {
 	{
 		ArrayList<T> resposta = new ArrayList<T>();
 	
-			for(int i = 0; i<rowIds.size(); i++)
+			for(int i = 0; i<rowIds.size()-3; i++)
 			{
 				resposta.add(rowIds.get(i));
+			}
+		
+		return resposta;
+	}
+	
+	public ArrayList<Nodo> splitEsquerdaRamo() 
+	{
+		ArrayList<Nodo> resposta = new ArrayList<Nodo>();
+		
+		for(int i = 0; i<referenciasNodos.size()-3; i++)
+			{
+				resposta.add(referenciasNodos.get(i));
 			}
 		
 		return resposta;
@@ -134,24 +147,13 @@ public class Nodo<T extends Comparable<T>>  {
 		return resposta;
 	}
 	
-	public ArrayList<Nodo> splitEsquerdaRamo() 
-	{
-		ArrayList<Nodo> resposta = new ArrayList<Nodo>();
-	
-			for(int i = 0; i<referenciasNodos.size(); i++)
-			{
-				resposta.add(referenciasNodos.get(i));
-			}
-		
-		return resposta;
-	}
 	
 	public ArrayList<Nodo> splitDireitaRamo() {
 		ArrayList<Nodo> resposta = new ArrayList<Nodo>();
 		
 		
-		resposta.add(0, referenciasNodos.get(3));
-		resposta.add(1, referenciasNodos.get(4));
+		//resposta.add(0, referenciasNodos.get(3));
+		//resposta.add(1, referenciasNodos.get(4));
 			
 		
 		return resposta;
@@ -166,18 +168,21 @@ public class Nodo<T extends Comparable<T>>  {
 			}
 	}
 	
-	public void addEsquerdaRamo(ArrayList<Nodo> esquerda) 
+	public void addEsquerdaRamo(ArrayList<Nodo<T>> esquerda) 
 	{
 		for(int i = 0; i<esquerda.size(); i++)
 			{
 			referenciasNodos.add(i, esquerda.get(i));
-
 			}
 	}
 	
 	public void limpaFilhos() 
 	{
-				rowIds.clear();	
+		
+		rowIds.clear();
+		
+		
+				
 	}
 	
 	public void addDireita(ArrayList<T> direita) 
@@ -216,7 +221,7 @@ public class Nodo<T extends Comparable<T>>  {
 	}
 
 	public String imprimeReferencias() {
-		String resp = " ";
+		String resp = "# ";
 		
 		for(int i = 0; i<referenciasNodos.size(); i++)
 		{
