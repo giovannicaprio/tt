@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -6,8 +7,18 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.io.FileNotFoundException; 
+import java.io.FileReader; 
+import java.io.IOException; 
+
+import org.json.simple.JSONObject; 
+import org.json.simple.parser.JSONParser; 
+import org.json.simple.parser.ParseException; 
 
 public class Funcoes {
+	
+
+	
 
 	int listaDataBlockUsados[] = new int[20];
 
@@ -70,6 +81,7 @@ public class Funcoes {
 		// Recupera os indices
 		if (sDadosInd.contains(",")) {
 			int iCount = 0;
+			sDadosInd = sDadosInd.replace("/0","").replace("/","");
 			String sIndices[] = sDadosInd.split(",");
 			// int sIndiceCheio[] = null;
 			while (iCount < sIndices.length) {
@@ -123,8 +135,6 @@ public class Funcoes {
 		// Referencia de ter feito UPDATE ou INSERT primeira posicao, al�m de
 		// ter gravado
 		boolean ExcluirDados = false;
-		// Refer�ncia para tamanho do ID
-		int tamIDBytes = 5;
 		// Hash Map
 		HashMap<Integer, String> mapDataBlock = new HashMap<Integer, String>();
 		HashMap<Integer, String> linhas = new HashMap<Integer, String>();
@@ -132,10 +142,6 @@ public class Funcoes {
 		int indiceDataBlock[] = new int[50];
 		// Posi��o de refer�ncia do valor dentro do rowid
 		int posrowid = 0;
-		// Auxiliar para ler os dados do byte e Ler ID do dado
-		StringBuilder sTamIndice = new StringBuilder();
-		StringBuilder sbDados = new StringBuilder();
-		StringBuilder sbID = new StringBuilder();
 
 		boolean bNaoEncontrou = true;
 		int TamDataBlockUtilizado = 0;
@@ -146,9 +152,7 @@ public class Funcoes {
 			byte[] datablockAux = new byte[4096];
 
 			// Referencia para ler a posi��o inicial do 4kb
-			int posIni = 4096 * listaDataBlock[TamDataBlockUtilizado]; // Posicao
-																		// do
-																		// datablock
+			int posIni = 4096 * listaDataBlock[TamDataBlockUtilizado]; // Posicao do datablock
 			posIni = posIni - 4096;
 
 			// leitura de posição inicial
@@ -157,7 +161,13 @@ public class Funcoes {
 			// passagem do bytes vazios e retorno dele preenchido com os dados
 			// daquela posi��o espec�fica
 			leitura.read(datablockAux, 0, datablockAux.length);
-
+			// Refer�ncia para tamanho do ID
+			int tamIDBytes = 5;
+			// Auxiliar para ler os dados do byte e Ler ID do dado
+			StringBuilder sTamIndice = new StringBuilder();
+			StringBuilder sbDados = new StringBuilder();
+			StringBuilder sbID = new StringBuilder();
+			
 			for (int i = 200; i < datablockAux.length; i++) {
 
 				// Diferente de dados em branco 0 bytes
@@ -221,10 +231,12 @@ public class Funcoes {
 		byte[] datablockAux = new byte[4096];
 		// Pega a posi��o de mem�ria do dado dentro do datablock 5;2 ficar� so o
 		// 2
+		/*
 		int refPos = Integer.parseInt(rowID.split(";")[1]);
 		// Referencia para ler a posi��o inicial do 4kb
 		int posIni = 4096 * Integer.parseInt(rowID.split(";")[0]); // Restar� so
-																	// 5 do 5;2
+		*/														// 5 do 5;2
+		int posIni =4096 * Integer.parseInt(rowID);
 		posIni = posIni - 4096;
 		// leitura de posição inicial
 		leitura.seek(posIni);
@@ -245,8 +257,7 @@ public class Funcoes {
 					if (sTamIndice.toString().trim().length() == 0) {
 						sTamIndice.append("0");
 					}
-					indiceDataBlock[icount] = Integer.parseInt(sTamIndice
-							.toString().trim());
+					indiceDataBlock[icount] = Integer.parseInt(sTamIndice.toString().trim());
 					sTamIndice = new StringBuilder();
 					icount++;
 				} else {
@@ -298,14 +309,19 @@ public class Funcoes {
 				ilimite = ini + indiceDataBlock[pos];
 			}
 
-			if (sDadosIns.contains(String.valueOf(id).trim())) {
-				for (int i = ini; i < ilimite; i++) {
-					datablockAux[200 + i] = 0;
+			if(sDadosIns.substring(0,5).toString().trim().length() > 0){
+				if(Integer.parseInt(sDadosIns.substring(0,5).trim()) == id){
+				
+					for (int i = ini; i < ilimite; i++) {
+						datablockAux[200 + i] = 0;
+					}
+					indiceDataBlock[pos] = 0;
+					ExcluirDados = true;
+					break;
+						
 				}
-				indiceDataBlock[pos] = 0;
-				ExcluirDados = true;
-				break;
 			}
+
 		}
 
 		// Regrava o indice
@@ -324,8 +340,8 @@ public class Funcoes {
 
 	}
 
-	public static boolean GravaDataBlock(int id, String texto, String rowID)
-			throws IOException {
+	public static boolean GravaDataBlock(int id, String texto, String rowID, ReferenciaDataBlock oRefDataBlock)throws IOException {
+		texto = texto + "|";
 		RandomAccessFile leitura = new RandomAccessFile("arquivo.bin", "rw");
 		// Referencia de ter feito UPDATE ou INSERT primeira posicao, al�m de
 		// ter gravado
@@ -335,7 +351,7 @@ public class Funcoes {
 		// Hash Map
 		HashMap<Integer, String> mapDataBlock = new HashMap<Integer, String>();
 		// Hash Map indice do datablock
-		int indiceDataBlock[] = new int[50];
+		int indiceDataBlock[] = new int[200];
 		// Posi��o de refer�ncia do valor dentro do rowid
 		int posrowid = 0;
 		// Auxiliar para ler os dados do byte e Ler ID do dado
@@ -360,7 +376,7 @@ public class Funcoes {
 
 		int icount = 0;
 
-		for (int i = 0; i < datablockAux.length; i++) {
+		for (int i = 0; i < 200; i++) {
 			if (i < 200) {
 
 				char cLetra = (char) datablockAux[i];
@@ -370,8 +386,7 @@ public class Funcoes {
 					if (sTamIndice.toString().trim().length() == 0) {
 						sTamIndice.append("0");
 					}
-					indiceDataBlock[icount] = Integer.parseInt(sTamIndice
-							.toString().trim());
+					indiceDataBlock[icount] = Integer.parseInt(sTamIndice.toString().trim());
 					sTamIndice = new StringBuilder();
 					icount++;
 				} else {
@@ -434,8 +449,8 @@ public class Funcoes {
 								campoID = " " + campoID;
 							}
 
-							indiceDataBlock[i] = (campoID.toString() + texto.trim() + "|").getBytes("utf-8").length;
-							mapDataBlock.put(i, (campoID.toString() + texto.trim()).toString() + "|");
+							indiceDataBlock[i] = (campoID.toString() + texto.trim()).getBytes("utf-8").length;
+							mapDataBlock.put(i, (campoID.toString() + texto.trim()).toString());
 							break;
 
 						}
@@ -456,6 +471,11 @@ public class Funcoes {
 		// Grava o indice
 		System.arraycopy(indice.toString().getBytes(), 0, datablockAux, 0,indice.toString().getBytes("utf-8").length);
 
+		if(!mapDataBlock.isEmpty()){
+			oRefDataBlock.id = Integer.parseInt(rowID.trim());
+			oRefDataBlock.listaInterna = indiceDataBlock;
+		}
+		
 		int posIndice = 0;
 		for (Entry<Integer, String> entry : mapDataBlock.entrySet()) {
 			posIndice++;
@@ -596,13 +616,19 @@ public class Funcoes {
 	// Método que criar um arquivo
 	public static void CriarArquivo() {
 		try {
-			FileOutputStream out = new FileOutputStream("arquivo.bin");
-			ObjectOutputStream os = new ObjectOutputStream(out);
-			// Especifica o tamanho do arquivo 256MB
-			byte[] buf = new byte[260884000];
-			os.write(buf);
-			os.flush();
-			os.close();
+			//Verifica se o arquivo existe
+			File f = new File("arquivo.bin");
+			if(!f.exists()) { 
+				
+				FileOutputStream out = new FileOutputStream("arquivo.bin");
+				ObjectOutputStream os = new ObjectOutputStream(out);
+				// Especifica o tamanho do arquivo 256MB
+				byte[] buf = new byte[260884000];
+				os.write(buf);
+				os.flush();
+				os.close();				
+			}
+			
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -623,16 +649,16 @@ public class Funcoes {
 			 bEncontrou = true;
 			 String sDadosIns  = entry.getValue(); 
 			 int iID = entry.getKey(); 
-			 System.out.println("ID=" + iID + " Value =" + sDadosIns + "\n\n");
+			 System.out.println("ID=" + iID + " Value =" + sDadosIns + "\n");
 		 }
 		 
 		 if(!bEncontrou){
-			 System.out.println("Nenhum registro encontrado \n\n");
+			 System.out.println("Nenhum registro encontrado \n");
 					 
 		 }
 	}
 
-	public int[] RecuperaDataBlocksUsados() {
+	public static int[] RecuperaDataBlocksUsados() {
 		HashMap<String, String> indices = new HashMap<String, String>();
 		int indicesComDados[] = null;
 		try {
@@ -654,6 +680,54 @@ public class Funcoes {
 		
 		return indicesComDados;
 	}
+	
+	
+	public static boolean  BuscaRowID(int id){
+		int rowId = -1;
+		int IndicesdataUsados[] = RecuperaDataBlocksUsados();
+		int iQuantIndices = 2;
+		while(iQuantIndices < IndicesdataUsados.length){
+			try {
+				if(ExcluirDados(id, String.valueOf(IndicesdataUsados[iQuantIndices]))){
+					return true;
+				}
+				iQuantIndices ++; 
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}	
+		return false;
+	}
+	
+	
+
+	public static void LeituraArquivoJson(){
+		JSONObject jsonObject; //Cria o parse de tratamento 
+		JSONParser parser = new JSONParser(); //Variaveis que irao armazenar os dados do arquivo JSON 
+		String nome; 
+		String sobrenome; 
+		String estado; 
+		String pais; 
+		try { //Salva no objeto JSONObject o que o parse tratou do arquivo 
+			jsonObject = (JSONObject) parser.parse(new FileReader( "saida.json")); //Salva nas variaveis os dados retirados do arquivo 
+			nome = (String) jsonObject.get("nome"); 
+			sobrenome = (String) jsonObject.get("sobrenome"); 
+			estado = (String) jsonObject.get("estado"); 
+			pais = (String) jsonObject.get("pais"); 
+			System.out.printf( "Nome: %s\nSobrenome: %s\nEstado: %s\nPais: %s\n", nome, sobrenome, estado, pais); 
+			} //Trata as exceptions que podem ser lançadas no decorrer do processo 
+		catch (FileNotFoundException e) {
+			e.printStackTrace(); 
+			}
+		catch (IOException e) { 
+			e.printStackTrace(); 
+			}
+		catch (ParseException e) { // TODO Auto-generated catch block 
+			e.printStackTrace(); 
+			}
+	}
+	
 	
 	
 

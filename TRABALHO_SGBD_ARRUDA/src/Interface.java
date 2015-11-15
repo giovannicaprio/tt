@@ -1,8 +1,12 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+ 
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class Interface {
+	BTree tree = new BTree(2);//Btree GIOVANNI
 	//Variáveis globais
 	static Funcoes funcoes = new   Funcoes();
 	HashMap<Integer, String> indices;
@@ -10,10 +14,16 @@ public class Interface {
 	static int iID = 0;
 	
 	public static void main(String[] args) throws IOException {
+		funcoes.LeituraArquivoJson();
 		//Criação do arquivo 
 		funcoes.CriarArquivo();
+		
 		//Montagem dos indices do datablock 
-		funcoes.GravarIndice("3,4,5,6,7,8,9,10","1,2","3","1","3");
+		StringBuilder indiceFree = new StringBuilder();
+		for(int i = 3; i < 65.633; i++){ //
+			indiceFree.append(i +  (i < 65.632? "," : ""));
+		}
+		funcoes.GravarIndice(indiceFree.toString(),"1,2","3","1","3");
 		//Recupera os indices
 		HashMap<Integer, String> indices = funcoes.RecuperaIndice();
 		//Montagem do menu		
@@ -43,22 +53,31 @@ public class Interface {
 					iID++;
 					//Recupera o rowId q ainda não está cheio
 					int rowId = funcoes.RetornaIndicePrimeiroDataBlockVazio();
+					//Criando um objeto de referência que irá retornar com os dados principais do datablock
+					ReferenciaDataBlock oRefDataBlock = null;
 					//Grava o texto no DataBlock
-					if(funcoes.GravaDataBlock(iID, sDadosDigitados, String.valueOf(rowId))){
+					if(funcoes.GravaDataBlock(iID, sDadosDigitados, String.valueOf(rowId), oRefDataBlock)){
 						System.out.println("Dados registrados com sucesso!");
 					}else{
 						System.out.println("Erro ao salvar dados");
 					}					
 					break;
 				case 2:
-					
+					String opBuscaDelete= "";
+					System.out.println("Digite o id que deseja excluir:\n");
+					opBuscaDelete = sc.nextLine();
+					if(funcoes.BuscaRowID(Integer.parseInt(opBuscaDelete.trim()))){
+						System.out.println("Registro excluído do sucesso!");
+					}else{
+						System.out.println("Registro não encontrado!");
+					}
 					break;
 				case 3:
 					
 					break;
 				case 4:
 					String opBusca= "";
-					System.out.println("Escolha a opção de busca: [1] - ID, [2] - Texto, [3] - Retornar ao Menu \n");
+					System.out.println("Escolha a opção de busca: [1 - ID], [2 - Texto], [3 - Retornar ao Menu] \n");
 					opBusca = sc.nextLine();
 					//Recupera os indices dos datablocks que estão ocupados 
 					int listaDataBlockUsados[] = funcoes.RecuperaDataBlocksUsados();
@@ -76,12 +95,11 @@ public class Interface {
 						break;
 					}else{
 						System.out.println("Você errou a opção,\n sistema irá retornar ao menu.");
-					}
-					
+					}					
 					
 					break;
 				case 5:
-					
+					System.exit(0);
 					break;
 				}
 				
@@ -91,4 +109,6 @@ public class Interface {
 	
 	
 	
+		
+		
 }
