@@ -51,33 +51,6 @@ public class Interface {
 
 			switch (Integer.parseInt(valor.trim())) {
 			case 1:
-<<<<<<< HEAD
-				System.out.println("Inserir o texto:");
-				String sDadosDigitados = sc.nextLine();
-				iID++;
-				// Recupera o rowId q ainda não está cheio
-				int rowId = funcoes.RetornaIndicePrimeiroDataBlockVazio();
-				// Criando um objeto de referência que irá retornar com os dados
-				// principais do datablock
-				ReferenciaDataBlock oRefDataBlock = null;
-				// Grava o texto no DataBlock
-				if (funcoes.GravaDataBlock(iID, sDadosDigitados,
-						String.valueOf(rowId), oRefDataBlock)) {
-				
-					//cria a arvore de ordem 2
-					BTree tree = new BTree(2);// Btree GIOVANNI
-					
-					//adiciona os ids seriais  na arvore
-					//problema: ainda nao estou passando o objeto pra arvore, o que implica em ainda n ter o rowid
-					tree.insert(tree, oRefDataBlock.id);
-					
-					
-					System.out.println("Dados registrados com sucesso!");
-				} else {
-					System.out.println("Erro ao salvar dados");
-=======
-=======
->>>>>>> RenanCS/master
 				
 				 opBusca = "";
 				System.out.println("Escolha a opção de inserção: [1 - Num. JSON], [2 - Texto], [3 - Retornar ao Menu] \n");
@@ -141,10 +114,6 @@ public class Interface {
 				case "3":
 					
 					break;
-<<<<<<< HEAD
->>>>>>> RenanCS/master
-=======
->>>>>>> RenanCS/master
 				}
 
 				

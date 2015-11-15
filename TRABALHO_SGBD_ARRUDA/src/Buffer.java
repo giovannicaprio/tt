@@ -53,52 +53,7 @@ public class Buffer {
 	
 	
 	
-<<<<<<< HEAD
 	
-=======
-	/*
-	public void populaBuffer()
-	{
-		Funcoes funcoes = new Funcoes();
-		int[] usados = funcoes.RecuperaDataBlocksUsados();
-		
-		for(int i= 0; i < usados.length && i < 257; i++)
-		{
-			String sDados = funcoes.BuscaDataBlock(Integer.parseInt(opBusca), "", listaDataBlockUsados)
-			// KEY = POSICAO, VALUE = DADOS
-			listaDadoIndiceRowID.put(usados[i], sDados);
-			
-			//listaDadoIndiceRowID.add(usados[i]);
-		}
-		
-	}
-	
-	public boolean temNoBuffer(int rowId)
-	{
-		if(listaDadoIndiceRowID.get(rowId) == null)
-		{
-			return false; //cache miss
-		}
-		
-		return true;
-	}
-	
-	public DataBlock clock(int rowId)
-	{
-		DataBlock resposta = new DataBlock();
-		
-		cacheHit = this.temNoBuffer(rowId);
-		
-		if(cacheHit)
-		{
-			//return listaRowIds.get(rowId);
-		}
-		
-		return resposta;
-	}
-	
-	*/
->>>>>>> RenanCS/master
 	
 	
 
