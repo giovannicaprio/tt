@@ -1,4 +1,9 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import org.json.simple.JSONObject; 
+import org.json.simple.parser.JSONParser; 
+import org.json.simple.parser.ParseException; 
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -10,6 +15,7 @@ public class Interface {
 	static int iID = 0;
 	
 	public static void main(String[] args) throws IOException {
+		funcoes.LeituraArquivoJson();
 		//Criação do arquivo 
 		funcoes.CriarArquivo();
 		//Montagem dos indices do datablock 
@@ -47,6 +53,7 @@ public class Interface {
 					ReferenciaDataBlock oRefDataBlock = null;
 					//Grava o texto no DataBlock
 					if(funcoes.GravaDataBlock(iID, sDadosDigitados, String.valueOf(rowId), oRefDataBlock)){
+					
 						System.out.println("Dados registrados com sucesso!");
 					}else{
 						System.out.println("Erro ao salvar dados");
@@ -99,4 +106,6 @@ public class Interface {
 	
 	
 	
+		
+		
 }
