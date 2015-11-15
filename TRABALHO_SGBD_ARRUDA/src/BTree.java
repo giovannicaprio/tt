@@ -151,7 +151,7 @@ public class BTree
 		}
 	}
 //--------------------------------------------------------------
-//metodo que insere de forma geral e no final chama a funcao insert non full para reorganizar a arvores
+//metodo que insere de forma geral e no final chama a funcao insert nonfull para reorganizar a arvores
 //--------------------------------------------------------------
 
 	public void insert(BTree t, int key)
