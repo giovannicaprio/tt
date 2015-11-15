@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Interface {
-	BTree tree = new BTree(2);// Btree GIOVANNI
 	// Variáveis globais
 	static Funcoes funcoes = new Funcoes();
 	HashMap<Integer, String> indices;
@@ -61,6 +60,15 @@ public class Interface {
 				// Grava o texto no DataBlock
 				if (funcoes.GravaDataBlock(iID, sDadosDigitados,
 						String.valueOf(rowId), oRefDataBlock)) {
+				
+					//cria a arvore de ordem 2
+					BTree tree = new BTree(2);// Btree GIOVANNI
+					
+					//adiciona os ids seriais  na arvore
+					//problema: ainda nao estou passando o objeto pra arvore, o que implica em ainda n ter o rowid
+					tree.insert(tree, oRefDataBlock.id);
+					
+					
 					System.out.println("Dados registrados com sucesso!");
 				} else {
 					System.out.println("Erro ao salvar dados");
