@@ -1,13 +1,12 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import org.json.simple.JSONObject; 
-import org.json.simple.parser.JSONParser; 
-import org.json.simple.parser.ParseException; 
+ 
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class Interface {
+	BTree tree = new BTree(2);//Btree GIOVANNI
 	//Variáveis globais
 	static Funcoes funcoes = new   Funcoes();
 	HashMap<Integer, String> indices;
@@ -18,8 +17,13 @@ public class Interface {
 		funcoes.LeituraArquivoJson();
 		//Criação do arquivo 
 		funcoes.CriarArquivo();
+		
 		//Montagem dos indices do datablock 
-		funcoes.GravarIndice("3,4,5,6,7,8,9,10","1,2","3","1","3");
+		StringBuilder indiceFree = new StringBuilder();
+		for(int i = 3; i < 65.633; i++){ //
+			indiceFree.append(i +  (i < 65.632? "," : ""));
+		}
+		funcoes.GravarIndice(indiceFree.toString(),"1,2","3","1","3");
 		//Recupera os indices
 		HashMap<Integer, String> indices = funcoes.RecuperaIndice();
 		//Montagem do menu		
@@ -53,7 +57,6 @@ public class Interface {
 					ReferenciaDataBlock oRefDataBlock = null;
 					//Grava o texto no DataBlock
 					if(funcoes.GravaDataBlock(iID, sDadosDigitados, String.valueOf(rowId), oRefDataBlock)){
-					
 						System.out.println("Dados registrados com sucesso!");
 					}else{
 						System.out.println("Erro ao salvar dados");
