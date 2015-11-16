@@ -41,7 +41,7 @@ public class Interface {
 
 			Scanner sc = new Scanner(System.in);
 			System.out.println("Bem Vindo ao Metadado SGBD");
-			System.out.println("Escolha uma das opções abaixo:");
+			System.out.println("Escolha uma das opcoes abaixo:");
 			System.out.println("1 - Inserir Registro.");
 			System.out.println("2 - Excluir Registro.");
 			System.out.println("3 - Atualizar Registro.");
@@ -53,7 +53,7 @@ public class Interface {
 			case 1:
 				
 				 opBusca = "";
-				System.out.println("Escolha a opção de inserção: [1 - Num. JSON], [2 - Texto], [3 - Retornar ao Menu] \n");
+				System.out.println("Escolha a opcao de insercao: [1 - Num. JSON], [2 - Texto], [3 - Retornar ao Menu] \n");
 				opBusca = sc.nextLine();
 				
 				switch (opBusca) {
@@ -62,24 +62,9 @@ public class Interface {
 					String sDadosDigitados = sc.nextLine();
 					String sDadosJson = funcoes.LeituraArquivoJson(Integer.parseInt(sDadosDigitados));
 					iID++;
-					// Recupera o rowId q ainda não está cheio
-					int rowId = funcoes.RetornaIndicePrimeiroDataBlockVazio();
-					// Criando um objeto de referência que irá retornar com os dados
-					// principais do datablock
 					 oRefDataBlock = new ReferenciaDataBlock();
-					// Grava o texto no DataBlock
-					if (funcoes.GravaDataBlock(iID, sDadosJson, String.valueOf(rowId),oRefDataBlock)) {
-						
-						//Grava dados no buffer
-						oBuffer.adicionaIDSerialDados(iID,sDadosJson);
-						//############# GRAVAR O OBJ REFDATABLOCK NA ARVORE 
-							//REVER ESTA PARTE tree.insert(t, oRefDataBlock.id);
-						//################################################
-						
-						System.out.println("Dados registrados com sucesso!");
-					} else {
-						System.out.println("Erro ao salvar dados");
-					}
+					 
+					InserirRegistroBanco(oRefDataBlock,sDadosJson,iID);
 					
 					break;
 					
@@ -89,27 +74,11 @@ public class Interface {
 					System.out.println("Inserir o texto:");
 					String sDadosDigitados1 = sc.nextLine();
 					iID++;
-					
-					// Recupera o rowId q ainda não está cheio
-					int rowId1 = funcoes.RetornaIndicePrimeiroDataBlockVazio();
-					
 					// Criando um objeto de referência que irá retornar com os dados principais do datablock
-					 oRefDataBlock = new ReferenciaDataBlock();
+					oRefDataBlock = new ReferenciaDataBlock();
 					
-					 // Grava o texto no DataBlock
-					if (funcoes.GravaDataBlock(iID, sDadosDigitados1,String.valueOf(rowId1), oRefDataBlock)) {
-						
-						//Grava dados no buffer
-						oBuffer.adicionaIDSerialDados(iID,sDadosDigitados1);
-						
-						//############# GRAVAR O OBJ REFDATABLOCK NA ARVORE 
-								//REVER ESTA PARTE tree.insert(t, oRefDataBlock.id);
-						//################################################
-						
-						System.out.println("Dados registrados com sucesso!");
-					} else {
-						System.out.println("Erro ao salvar dados");
-					}	
+					InserirRegistroBanco(oRefDataBlock,sDadosDigitados1,iID);
+					
 					break;
 				case "3":
 					
@@ -122,31 +91,31 @@ public class Interface {
 				String opBuscaDelete = "";
 				System.out.println("Digite o id que deseja excluir:\n");
 				opBuscaDelete = sc.nextLine();
-				
-				//Grava dados no buffer
-				if ( oBuffer.ExcluirDoBuffer(Integer.parseInt(opBuscaDelete.toString().trim()))){
-				
-					//############# REMOVER OBJ REFDATABLOCK DA ARVORE 
-						//REVER ESTA PARTE tree.REMOVEt(t, oRefDataBlock.id);
-					//################################################
-			
-					if (funcoes.BuscaRowID(Integer.parseInt(opBuscaDelete.trim()))) {
-						System.out.println("Registro excluído do sucesso!");
-					} else {
-						System.out.println("Registro não encontrado!");
-					}
-				}else{
-					System.out.println("Registro não encontrado!");	
-				}
-				
-				
+				//######EXCLUIIR DADOS 
+				ExcluirDados(opBuscaDelete.toString().trim());
+							
 				break;
 			case 3:
+				opBusca = "";
+				System.out.println("Digite o ID:\n");
+				opBusca = sc.nextLine();
+				int ID = Integer.parseInt( opBusca.toString().trim());
+				System.out.println("Digite o novo text:\n");
+				opBusca = sc.nextLine();
+				
+				//######EXCLUIIR DADOS 
+				ExcluirDados(String.valueOf(ID));
+				
+				//###### INSERIR DADOS 
+				 oRefDataBlock = new ReferenciaDataBlock(); 
+				 InserirRegistroBanco(oRefDataBlock,opBusca,ID);
+					
+				
 
 				break;
 			case 4:
 				 opBusca = "";
-				System.out.println("Escolha a opção de busca: [1 - ID], [2 - Texto], [3 - Retornar ao Menu] \n");
+				System.out.println("Escolha a opcao de busca: [1 - ID], [2 - Texto], [3 - Retornar ao Menu] \n");
 				opBusca = sc.nextLine();
 				// Recupera os indices dos datablocks que estão ocupados
 				 listaDataBlockUsados = funcoes.RecuperaDataBlocksUsados();
@@ -208,4 +177,44 @@ public class Interface {
 
 	}
 
+	
+	private static void ExcluirDados(String ID){
+		//Grava dados no buffer
+		if ( oBuffer.ExcluirDoBuffer(Integer.parseInt(ID.toString().trim()))){
+		
+			//############# REMOVER OBJ REFDATABLOCK DA ARVORE 
+				//REVER ESTA PARTE tree.REMOVEt(t, oRefDataBlock.id);
+			//################################################
+	
+			if (funcoes.BuscaRowID(Integer.parseInt(ID.trim()))) {
+				System.out.println("Registro excluído do sucesso!");
+			} else {
+				System.out.println("Registro não encontrado!");
+			}
+		}else{
+			System.out.println("Registro não encontrado!");	
+		}
+	}
+	
+	private static void InserirRegistroBanco(ReferenciaDataBlock oRefDataBlock, String sDadosDigitados1, int iID ) throws IOException{
+		// Recupera o rowId q ainda não está cheio
+		int rowId1 = funcoes.RetornaIndicePrimeiroDataBlockVazio();
+		
+		 // Grava o texto no DataBlock
+		if (funcoes.GravaDataBlock(iID, sDadosDigitados1,String.valueOf(rowId1), oRefDataBlock)) {
+			
+			//Grava dados no buffer
+			oBuffer.adicionaIDSerialDados(iID,sDadosDigitados1);
+			
+			//############# GRAVAR O OBJ REFDATABLOCK NA ARVORE 
+					//REVER ESTA PARTE tree.insert(t, oRefDataBlock.id);
+			//################################################
+			
+			System.out.println("Dados registrados com sucesso!");
+		} else {
+			System.out.println("Erro ao salvar dados");
+		}	
+		
+	}
+	
 }
