@@ -6,9 +6,21 @@ import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.io.FileNotFoundException; 
+import java.io.FileReader; 
+import java.io.IOException; 
+
+import org.json.simple.JSONObject; 
+import org.json.simple.parser.JSONParser; 
+import org.json.simple.parser.ParseException; 
 
 public class Funcoes {
+	
+
+	
 
 	int listaDataBlockUsados[] = new int[20];
 
@@ -462,8 +474,10 @@ public class Funcoes {
 		System.arraycopy(indice.toString().getBytes(), 0, datablockAux, 0,indice.toString().getBytes("utf-8").length);
 
 		if(!mapDataBlock.isEmpty()){
-			oRefDataBlock.id = Integer.parseInt(rowID.trim());
+			oRefDataBlock.rowID = rowID.trim();
 			oRefDataBlock.listaInterna = indiceDataBlock;
+			oRefDataBlock.id = id;
+			oRefDataBlock.DataBlock = Integer.parseInt(rowID.toString().trim());
 		}
 		
 		int posIndice = 0;
@@ -689,6 +703,35 @@ public class Funcoes {
 		}	
 		return false;
 	}
+	
+	
+
+	public static String LeituraArquivoJson(int ref){
+		JSONObject jsonObject; //Cria o parse de tratamento 
+		JSONParser parser = new JSONParser(); //Variaveis que irao armazenar os dados do arquivo JSON 
+
+		try { //Salva no objeto JSONObject o que o parse tratou do arquivo 
+			jsonObject = (JSONObject) parser.parse(new FileReader( ref + ".json")); //Salva nas variaveis os dados retirados do arquivo 
+			
+			String sDados = "";
+			Set<Entry> entries = jsonObject.entrySet();
+			sDados = entries.toString();
+			return sDados;
+			
+			} //Trata as exceptions que podem ser lançadas no decorrer do processo 
+		catch (FileNotFoundException e) {
+			e.printStackTrace(); 
+			}
+		catch (IOException e) { 
+			e.printStackTrace(); 
+			}
+		catch (ParseException e) { // TODO Auto-generated catch block 
+			e.printStackTrace(); 
+			}
+		return "";
+	}
+	
+		
 	
 	
 
