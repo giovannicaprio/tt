@@ -477,6 +477,7 @@ public class Funcoes {
 			oRefDataBlock.rowID = rowID.trim();
 			oRefDataBlock.listaInterna = indiceDataBlock;
 			oRefDataBlock.id = id;
+			oRefDataBlock.DataBlock = Integer.parseInt(rowID.toString().trim());
 		}
 		
 		int posIndice = 0;
