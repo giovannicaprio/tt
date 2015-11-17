@@ -37,7 +37,7 @@ public class Interface {
 	 * 
 	 * essa funcao retornar um int, logo ja pode atribui pra onde tu quer
 	 * 
-	 * int rowid = tree.search(tree.root,IDSERIAL).rowIds;
+	 * int rowid = tree.search(tree.root,IDSERIAL).getvalue(IDSERIAL);
 	 * 
 	 * 
 	 * DELETAR é barbada, basta dar um delete passando a arvore pra ela mesma e o IDSERIAL
