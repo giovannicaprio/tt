@@ -1,38 +1,40 @@
 
+/* Esta classe foi implementada com base no livro INTRODUCTION TO ALGORITHMS 
+ * de THOMAS H. CORMEN, CHARLES E. LEISERSON e RONALD L. RIVEST (1989, THE MIT PRESS)
+ * 
+ * Neste livro os autores descrevem como criar um btree, criar nodos, inserir nodos, 
+ * fazer split de folhas e ramos e deletar nodos.
+ * 
+ * Entretanto, para o desevolvimento deste trabalho os pseudo-codigos descritos pelos autores
+ * foram alterados para resolverem os problemas propostos neste projeto. Desta forma, os nodos
+ * da btree foram alterados para receberem referencia para os datablocks que estão 
+ * inseridos em um datafile. 
+ * 
+ * Assim, esta classe btree otimiza a pesquisa em nosso banco de dados possui possui o index
+ * de cada data block e a sua posicao.
+ * 
+ * 
+ */
+
 
 
 public class BTree
 {
 
-// here are variables available to tree
-
-	static int order; // order of tree
-
-	BNode root;  //every tree has at least a root node
-
-
-// ---------------------------------------------------------
-// here is the constructor for tree                        |
-// ---------------------------------------------------------
-
+	static int order; // ordem da arvore. 
+	BNode root;  //cada arvore tem pelo menos o nodo raiz
 
 	public BTree(int order)
 	{
 		this.order = order;
-
 		root = new BNode(order, null);
 
 	}
-
-
 // --------------------------------------------------------
-// this will be method to search for a given node where   |
-// we want to insert a key value. this method is called   |
-// from SearchnPrintNode.  It returns a node with key     |
-// value in it                                            |
+//metodo que procura por um nodo especifico               
 // --------------------------------------------------------
 
-
+	// tudo que era key de insercao vira  --- > ref.id pois ja bota direto o idSerial
 	public BNode search(BNode root, int key)
 	{
 		int i = 0;//comeca procurando pelo index 0, o menor
@@ -55,7 +57,6 @@ public class BTree
 		}
 	}
 	
-	
 //  --------------------------------------------------------
 //  Metodo split que divide o nodo que queremos no qual quero inserir se ele esta cheio
 //  --------------------------------------------------------
@@ -63,15 +64,12 @@ public class BTree
 	public void split(BNode x, int i, BNode y)
 	{
 		BNode z = new BNode(order,null);//crio um nodo extra, ja que vou fazer a divisao
-
 		z.leaf = y.leaf;// seta como folha
-
 		z.count = order - 1;//atualiza o tamanho
 
 		for(int j = 0; j < order - 1; j++)
 		{
 			z.key[j] = y.key[j+order]; //copia o fim do y na frente do z
-
 		}
 		if(!y.leaf)//se n for uma folha precisa redirecionar os filho
 		{
@@ -110,7 +108,7 @@ public class BTree
 // Metodo para inserir no nodo quando ele nao esta cheio
 // ----------------------------------------------------------
 
-	public void nonfullInsert(BNode x, int key)
+	public void nonfullInsert(BNode x, int key, ReferenciaDataBlock ref)
 	{
 		int i = x.count; //pega o numero de chaves dentro de x pra fazer a verificacao
 
@@ -123,7 +121,8 @@ public class BTree
 				i--;
 			}
 
-			x.key[i] = key;//coloca o valor dentro do nodo
+			x.key[i] = key;//coloca o valor do idserial dentro do array do nodo
+			x.rowIds = ref.DataBlock;//coloca o objeto inteiro dentro do nodo
 			x.count ++; //incrementa o numero de chaves q esse nodo tem. Guarda a info pra usar depois
 
 		}
@@ -147,14 +146,14 @@ public class BTree
 				}
 			}
 
-			nonfullInsert(x.child[j],key);//recurse
+			nonfullInsert(x.child[j], key, ref);//recusao
 		}
 	}
 //--------------------------------------------------------------
-//metodo que insere de forma geral e no final chama a funcao insert nonfull para reorganizar a arvores
+//metodo que insere de forma geral e no final chama a funcao insert non full para reorganizar a arvores
 //--------------------------------------------------------------
 
-	public void insert(BTree t, int key)
+	public void insert(BTree t, ReferenciaDataBlock ref)
 	{
 		BNode r = t.root;//a partir da raiz procura o nodo pra inserir corretamente
 		if(r.count == 2*order - 1)//if q verifica se esta cheio. Se cair aqui faz o split
@@ -169,16 +168,16 @@ public class BTree
 	    			       
 			s.child[0] = r;
 
-			split(s,0,r);//split raix
+			split(s,0,r);//split raiz passando (nodo interno que nao esteja cheio, index, nodo r com o qual farei o split) 
 
-			nonfullInsert(s, key); //insere
+			nonfullInsert(s, ref.id, ref); //insere passando (nodo interno, idserial e o objeto com as infos do datablock)
 		}
 		else
-			nonfullInsert(r,key);//se nao ta cheio so insere
+			nonfullInsert(r, ref.id, ref);//se nao ta cheio so insere
 	}
 
 // ---------------------------------------------------------------------------------
-// this will be method to print out a node, or recurses when root node is not leaf |
+// metod so pra imprimir a arvore
 // ---------------------------------------------------------------------------------
 
 
@@ -186,41 +185,18 @@ public class BTree
 	{
 		for(int i = 0; i < n.count; i++)
 		{
-			System.out.print(n.getValue(i)+" " );//this part prints root node
+			System.out.print(n.getValue(i)+" nodo raiz " );
 		}
 
-		if(!n.leaf)//this is called when root is not leaf;
+		if(!n.leaf)
 		{
 
-			for(int j = 0; j <= n.count  ; j++)//in this loop we recurse
-			{				  //to print out tree in
-				if(n.getChild(j) != null) //preorder fashion.
-				{			  //going from left most
-				System.out.println();	  //child to right most
-				print(n.getChild(j));     //child.
-				}
-			}
-		}
-	}
-	
-	//metodo para imprimir a arvore 
-
-	public void toString(BNode n)
-	{
-		for(int i = 0; i < n.count; i++)
-		{
-			System.out.print(n.getValue(i)+" " );//this part prints root node
-		}
-
-		if(!n.leaf)//this is called when root is not leaf;
-		{
-
-			for(int j = 0; j <= n.count  ; j++)//in this loop we recurse
-			{				  //to print out tree in
-				if(n.getChild(j) != null) //preorder fashion.
-				{			  //going from left most
-				System.out.println();	  //child to right most
-				print(n.getChild(j));     //child.
+			for(int j = 0; j <= n.count  ; j++)
+			{				  
+				if(n.getChild(j) != null) 
+				{			 
+				System.out.println("child?");	  
+				print(n.getChild(j).getChild(j));     
 				}
 			}
 		}
@@ -228,7 +204,7 @@ public class BTree
 	
 
 // ------------------------------------------------------------
-// this will be method to print out a node                    |
+// metodo que imprime um nodo especifico
 // ------------------------------------------------------------
 
 	public void SearchPrintNode( BTree T,int x)
@@ -240,7 +216,7 @@ public class BTree
 		if (temp==null)
 		{
 
-		System.out.println("The Key does not exist in this tree");
+		System.out.println("Essa chave não existe na B-tree");
 		}
 
 		else
@@ -253,22 +229,15 @@ public class BTree
 	}
 
 //--------------------------------------------------------------
-//this method will delete a key value from the leaf node it is |
-//in.  We will use the search method to traverse through the   |
-//tree to find the node where the key is in.  We will then     |
-//iterated through key[] array until we get to node and will   |
-//assign k[i] = k[i+1] overwriting key we want to delete and   |
-//keeping blank spots out as well.  Note that this is the most |
-//simple case of delete that there is and we will not have time|
-//to implement all cases properly.                             |
+//metodo para deletar um nodo especifico
 //--------------------------------------------------------------
 
        public void deleteKey(BTree t, int key)
        {
 			       
-		BNode temp = new BNode(order,null);//temp Bnode
+		BNode temp = new BNode(order,null);
 			
-		temp = search(t.root,key);//call of search method on tree for key
+		temp = search(t.root,key);
 
 		if(temp.leaf && temp.count > order - 1)
 		{
@@ -287,7 +256,7 @@ public class BTree
 		}
 		else
 		{
-			System.out.println("This node is either not a leaf or has less than order - 1 keys.");
+			System.out.println("Esse nodo é uma folha ou tem ordem -1 de chaves.");
 		}
        }
 

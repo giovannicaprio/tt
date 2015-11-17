@@ -4,7 +4,68 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
+
 public class Interface {
+	
+	/*
+	 * Cara, a btree ficou bem simples. Vou te mostrar o passo a passo. Vou tentar fazer o possivel pra tu so precisar copiar e colar
+	 * tendo que alterar pouca coisa pra adaptar
+	 * 
+	 * cria a arvore 
+	 * cria ela apenas um vez ne. Acho que inclusive tu pode criar uma variavel statica pra chamar em outras classes se precisar
+	 * 
+	 * 	BTree tree = new BTree(5); // aquele 4 é a ordem dela. Pode criar com a ordem que tu quiser. 
+	 * 							  //Se nao me engano a ordem do trabalho é 5, por isso deixei o 5
+	 * 							 // a ordem eh d2 e tal. Se tiver 4 dentro do nodo ela ta de boa, quando entra o quinto ela faz split
+	 * 
+	 * 
+	 * 
+	 * 
+	 * Inserir na btree eh uma barbada. É só chamar o metodo insert e passa ela mesma junto com o objeto referenciaDataBlock
+	 * 
+	 *      ReferenciaDataBlock ref = new ReferenciaDataBlock();
+            ref.id = 34;
+            ref.DataBlock = 78;
+        	tree.insert(tree,ref);
+	 *         
+	 *         
+	 * 
+	 * 
+	 * Pesquisar um rowid
+	 * 
+	 * Pra pesquisar basta chamar a funcao search, passando a raiz (tree.root), o idserial e dar um .rowIds
+	 * 
+	 * essa funcao retornar um int, logo ja pode atribui pra onde tu quer
+	 * 
+	 * int rowid = tree.search(tree.root,IDSERIAL).rowIds;
+	 * 
+	 * 
+	 * DELETAR é barbada, basta dar um delete passando a arvore pra ela mesma e o IDSERIAL
+	 * 
+	 * tree.deleteKey(tree, IDSERIAL);
+
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// Variáveis globais
 	static Buffer oBuffer = new Buffer();
 	static Funcoes funcoes = new Funcoes();
